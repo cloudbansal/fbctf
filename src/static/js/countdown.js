@@ -48,7 +48,7 @@ module.exports = {
       return;
     }
 
-    var days = parseInt((secs/(60*60*24)) % 24);
+    var days = parseInt((secs/(60*60*24)));
     var hours = parseInt((secs/(60*60)) % 24);
     var minutes = parseInt((secs/60) % 60);
     var seconds = parseInt(secs % 60);
