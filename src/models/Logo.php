@@ -12,8 +12,6 @@ class Logo extends Model implements Importable, Exportable {
 
   const string CUSTOM_LOGO_DIR = '/data/customlogos/';
   const int MAX_CUSTOM_LOGO_SIZE_BYTES = 1000000;
-  const int DEFAULT_LOGO_WIDTH = 80;
-  const int DEFAULT_LOGO_HEIGHT = 62;
   const string DEFAULT_LOGO_TYPE = "png";
   private static array<int, string>
     $CUSTOM_LOGO_TYPES = [
@@ -305,7 +303,7 @@ class Logo extends Model implements Importable, Exportable {
     }
 
     $binary_data =
-      self::resizeCustomLogo($binary_data, $image_info[1], $image_info[0]);
+      self::resizeCustomLogo($binary_data, $image_info[0], $image_info[1]);
 
     $type_extension = self::DEFAULT_LOGO_TYPE;
 
@@ -349,10 +347,16 @@ class Logo extends Model implements Importable, Exportable {
     int $original_height,
   ): string {
     $source_image = imagecreatefromstring($binary_data);
-    $resized_image = imagecreatetruecolor(
-      self::DEFAULT_LOGO_WIDTH,
-      self::DEFAULT_LOGO_HEIGHT,
-    );
+    $ratio_orig = $original_width/$original_height;
+    $width = 200;
+    $height = 200;
+
+    if ($width/$height > $ratio_orig) {
+       $width = $height*$ratio_orig;
+    } else {
+       $height = $width/$ratio_orig;
+    }
+    $resized_image = imagecreatetruecolor($width, $height);
     imagealphablending($resized_image, false);
     imagesavealpha($resized_image, true);
     imagecopyresampled(
@@ -362,8 +366,8 @@ class Logo extends Model implements Importable, Exportable {
       0,
       0,
       0,
-      self::DEFAULT_LOGO_WIDTH,
-      self::DEFAULT_LOGO_HEIGHT,
+      $width,
+      $height,
       $original_width,
       $original_height,
     );
